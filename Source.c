@@ -45,10 +45,17 @@ typedef struct FlexList {
  * @return Returns 0 on success, -1 on failure.
  */
 int FL_SetLastError(const char* message) {
-	free(FL_ErrorMessage);
+	if (FL_ErrorMessage != NULL) {
+		free(FL_ErrorMessage);
+	}
+
 	FL_ErrorMessage = malloc(strlen(message) + 1);
-	if (!FL_ErrorMessage) return -1;  // Speicherfehler
-	strcpy_s(FL_ErrorMessage, sizeof(FL_ErrorMessage), message);
+	if (!FL_ErrorMessage) {
+		return -1;
+	}
+
+	strcpy_s(FL_ErrorMessage, strlen(message) + 1, message);
+
 	return 0;
 }
 /**
@@ -128,9 +135,15 @@ int FL_Add(FlexList* list, void* item, enum FlexListType itemType) {
 		return -1;
 	}
 }
-
-
-
+//NOT FIXED
+/**
+ * @brief Gets a void* from a FlexList at a specified position.
+ *
+ * @param list A FlexList pointer pointing to the list you wish to add something to.
+ * @param index The index of the item you wish to get.
+ *
+ * @return Returns a void* on success, NULL on failure.
+ */
 void* FL_GetItem(FlexList* list, unsigned int index) {
 	if (list == NULL) {
 		FL_SetLastError("FlexList* unspecified");
@@ -146,38 +159,89 @@ void* FL_GetItem(FlexList* list, unsigned int index) {
 	}
 	return currentItem->content;
 }
-unsigned int FL_GetLength(FlexList* list) {
+//NOT FIXED
+/**
+ * @brief Gets the data type of a FlexListItem.
+ *
+ * @param list A FlexList pointer pointing to the target list.
+ * @param index The index of the item you wish to get the datatype.
+ *
+ * @return Returns a enum FlexListType on success, enum FlexListType FL_TYPE_UNDEFINED on failure.
+ */
+enum FlexListType FL_GetItemType(FlexList* list, unsigned int index) {
 	if (list == NULL) {
 		FL_SetLastError("FlexList* unspecified");
+		return FL_TYPE_UNDEFINED;
+	}
+	if (index >= list->size) {
+		FL_SetLastError("Index out of bounds");
+		return FL_TYPE_UNDEFINED;
+	}
+	FlexListItem* currentItem = list->first;
+	for (unsigned int i = 0; i < index; i++) {
+		currentItem = currentItem->next;
+	}
+	return currentItem->type;
+}
+/**
+ * @brief Gets the length of a FlexList.
+ *
+ * @param list A FlexList pointer pointing to the list you wish to get the length of.
+ * 
+ * @return Returns an unsigned integer representing the length of the list.
+ */
+unsigned int FL_GetLength(FlexList* list) {
+	if (list == NULL) {
+		FL_SetLastError("FlexList* unspecified.");
 		return NULL;
 	}
 	return list->size;
 }
+/**
+ * @brief Removes an item from a FlexList at a specified position.
+ *
+ * @param list A FlexList pointer pointing to the list you wish to remove an item from.
+ * @param index The index of the item you wish to remove.
+ *
+ * @return Returns 0 on success, -1 on failure.
+ */
 int FL_RemoveItem(FlexList* list, unsigned int index) {
 	if (list == NULL) {
-		FL_SetLastError("FlexList* unspecified");
-		return NULL;
+		FL_SetLastError("FlexList* unspecified.");
+		return -1;
 	}
 	if (index >= list->size) {
-		FL_SetLastError("Index out of bounds");
-		return NULL;
+		FL_SetLastError("Index out of bounds.");
+		return -1;
 	}
+
 	FlexListItem* previousItem = NULL;
 	FlexListItem* currentItem = list->first;
 	for (unsigned int i = 0; i < index; i++) {
-		if (i == index - 1) {
-			previousItem = currentItem;
-		}
+		previousItem = currentItem;
 		currentItem = currentItem->next;
 	}
-	if (currentItem->next == NULL) {
-		previousItem->next = NULL;
+
+	// First element
+	if (currentItem == list->first) {
+		list->first = currentItem->next;
+		if (list->first == NULL) {
+			list->last = NULL;
+		}
 	}
+	// Last element
+	else if (currentItem == list->last) {
+		list->last = previousItem;
+		list->last->next = NULL;
+	}
+	// Fall 3: Defalt
 	else {
 		previousItem->next = currentItem->next;
 	}
+
 	free(currentItem);
 	list->size--;
+	return 0;
 }
 int main() {
 	FlexList* testList = FL_Create();
@@ -187,5 +251,13 @@ int main() {
 	FL_Add(testList, "Test2", FL_TYPE_STRING);
 	length = FL_GetLength(testList);
 	printf("List Length: %u\n", length);
+	FL_RemoveItem(testList, 1);
+	length = FL_GetLength(testList);
+	printf("List Length: %u\n", length);
+	FL_RemoveItem(testList, 0);
+	length = FL_GetLength(testList);
+	printf("List Length: %u\n", length);
+	FL_RemoveItem(testList, 3);
+	printf("Latest Error: %s\n", FL_GetLastError());
 	return 0;
 }

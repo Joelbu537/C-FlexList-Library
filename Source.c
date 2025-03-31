@@ -48,9 +48,30 @@ int FL_Add(FlexList* list, void* item, enum FlexListType itemType) {
 	}
 
 	FlexListItem newItem = { item, NULL, itemType };
-	list->last->next = &newItem;
-	list->last = &newItem;
-	list->size++;
 
+	if (list->first == NULL) {
+		list->first = &newItem;
+		list->last = &newItem;
+		list->size++;
+
+		return 0;
+	}
+	else {
+		list->last->next = &newItem;
+		list->last = &newItem;
+		list->size++;
+
+		return 0;
+	}
+}
+
+int FL_Create(FlexList* list) {
+	if (list == NULL) {
+		FL_ErrorMessage = "FlexList* unspecified";
+		return -1;
+	}
+	list->first = NULL;
+	list->last = NULL;
+	list->size = 0;
 	return 0;
 }

@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 char* FL_ErrorMessage = NULL;
 
@@ -21,7 +22,8 @@ enum FlexListType {
 	FL_TYPE_STRING,
 	FL_TYPE_LIST,
 	FL_TYPE_VOID,
-	FL_TYPE_UNDEFINED
+	FL_TYPE_UNDEFINED,
+	FL_TYPE_NULL
 };
 struct FlexListItem;
 typedef struct FlexListItem {
@@ -29,11 +31,12 @@ typedef struct FlexListItem {
 	struct FlexListItem* next;
 	enum FlexListType type;
 } FlexListItem;
-
+struct FlexList;
 typedef struct FlexList {
 	FlexListItem* first;
 	FlexListItem* last;
 	unsigned int size;
+	struct FlexList* complexityDictionary;
 } FlexList;
 
 /**
@@ -80,6 +83,36 @@ FlexList* FL_Create() {
 	list->first = NULL;
 	list->last = NULL;
 	list->size = 0;
+
+	FlexList* dictionary = malloc(sizeof(FlexList));
+	if (dictionary == NULL) {
+		FL_SetLastError("Memory allocation of a new FlexList instance failed.");
+		free(list);
+		return NULL;
+	}
+
+	// Create the 0st and 1st List* so for loops don't need to be fucked with and work normal and fine and how they are supposed to work.
+
+	FlexListItem* zeroComplexity = malloc(sizeof(FlexListItem));
+	FlexListItem* oneComplexity = malloc(sizeof(FlexListItem));
+
+	zeroComplexity->content = NULL;
+	zeroComplexity->type = FL_TYPE_NULL;
+	zeroComplexity->next = oneComplexity;
+
+	oneComplexity->content = NULL;
+	oneComplexity->type = FL_TYPE_NULL;
+	oneComplexity->next = NULL;
+
+	// Add evrythiong together and return the list.
+	dictionary->first = zeroComplexity;
+	dictionary->last = oneComplexity;
+	dictionary->size = 2;
+	dictionary->complexityDictionary = NULL;
+
+	list->complexityDictionary = dictionary;
+
+	//List is now configured.
 	return list;
 }
 /**
@@ -100,7 +133,7 @@ int FL_Add(FlexList* list, void* item, enum FlexListType itemType) {
 		FL_SetLastError("Item* unspecified.");
 		return -1;
 	}
-	if (itemType < FL_TYPE_BOOL || itemType > FL_TYPE_UNDEFINED) {
+	if (itemType < FL_TYPE_BOOL || itemType > FL_TYPE_NULL) {
 		itemType = FL_TYPE_UNDEFINED;
 		FL_SetLastError("Item type unspecified. Set to FL_TYPE_UNDEFINED instead.");
 	}
@@ -119,21 +152,23 @@ int FL_Add(FlexList* list, void* item, enum FlexListType itemType) {
 		list->first = newItem;
 		list->last = newItem;
 		list->size = 1;
-
-		return 0;
 	}
 	else if (list->last != NULL) {
 		list->last->next = newItem;
 		list->last = newItem;
 		list->size++;
-
-		return 0;
 	}
 	else {
 		FL_SetLastError("Unknown error occurred while adding a new Element to a list.");
-
 		return -1;
 	}
+
+	//Add dictionary entry if neccesarry.
+	if ((int)powf((float)10, (float)list->complexityDictionary->size) < list->size) {
+		
+	}
+
+	return 0;
 }
 //NOT FIXED
 /**

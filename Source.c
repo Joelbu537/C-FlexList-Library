@@ -28,6 +28,14 @@ enum FlexListType {
 
 // Crack-Gedanken von irgendwann:
 // Wenn List-Length > 10 und ComplexityPointer == NULL, neue ComplexityPointer.
+// Target Index ist 10.145. Wie vorgehen?
+// 10000-Dictionary nutzen um zu Index 10.000 zu springen.
+// Wie herausfinden dass wir nach 10000 suchen?
+// Index zu string, Stringlänge ermitteln.
+// Die Stringlänge == log10(10000) == 4 Directory-Sprünge.
+// num = index;
+// char str[(int)((ceil(log10(num))+1)*sizeof(char))];
+// sprintf(str, "%d", index);
 
 struct FlexListItem;
 typedef struct FlexListItem {

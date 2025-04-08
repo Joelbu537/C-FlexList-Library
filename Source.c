@@ -25,6 +25,10 @@ enum FlexListType {
 	FL_TYPE_UNDEFINED,
 	FL_TYPE_NULL
 };
+
+// Crack-Gedanken von irgendwann:
+// Wenn List-Length > 10 und ComplexityPointer == NULL, neue ComplexityPointer.
+
 struct FlexListItem;
 typedef struct FlexListItem {
 	void* content;
@@ -92,6 +96,7 @@ FlexList* FL_Create() {
 	}
 
 	// Create the 0st and 1st List* so for loops don't need to be fucked with and work normal and fine and how they are supposed to work.
+	// Might be unneccessary
 
 	FlexListItem* zeroComplexity = malloc(sizeof(FlexListItem));
 	FlexListItem* oneComplexity = malloc(sizeof(FlexListItem));

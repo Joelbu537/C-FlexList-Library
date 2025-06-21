@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "FlexList.h"
 
 char* FL_ErrorMessage = NULL;
 
@@ -32,6 +33,7 @@ enum FlexListType {
 // 10000-Dictionary nutzen um zu Index 10.000 zu springen.
 // Wie herausfinden dass wir nach 10000 suchen?
 // Index zu string, Stringlänge ermitteln.
+// 
 // Die Stringlänge == log10(10000) == 4 Directory-Sprünge.
 // num = index;
 // char str[(int)((ceil(log10(num))+1)*sizeof(char))];

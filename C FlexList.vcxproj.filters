@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C FlexList.h">
+    <ClCompile Include="FlexList.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source.c">
+    <ClCompile Include="FlexList.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

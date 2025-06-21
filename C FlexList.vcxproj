@@ -128,8 +128,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C FlexList.h" />
-    <ClCompile Include="Source.c" />
+    <ClCompile Include="FlexList.h" />
+    <ClCompile Include="FlexList.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
